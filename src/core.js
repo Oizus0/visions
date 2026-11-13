@@ -37,6 +37,10 @@ export function commandState(state,command,now=Date.now()){
   if(command.type==='play'){
     const a=asset(command.asset);
     next[a.kind]={session:crypto.randomUUID(),startedAt:now+1500,asset:a};
+  }else if(command.type==='volume'&&['cut','mask'].includes(command.kind)){
+    const active=state[command.kind];
+    if(!active||active.asset.id!==command.id)return state;
+    next[command.kind]={...active,asset:asset({...active.asset,volume:command.volume})};
   }else if(command.type==='opacity'){
     if(!state.mask||state.mask.asset.id!==command.id)return state;
     const updated=asset({...state.mask.asset,opacity:command.opacity});

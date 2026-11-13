@@ -1,6 +1,6 @@
 # Visions
 
-Extensão para Owlbear Rodeo com biblioteca de cutscenes e máscaras visuais controladas pelo GM. Na versão 0.1.1, imagem e áudio têm fade na entrada, no encerramento e na troca/interrupção. Máscaras usam o áudio original a 80%, quando existir, sem novo seletor de volume.
+Extensão para Owlbear Rodeo com biblioteca de cutscenes e máscaras visuais controladas pelo GM. Na versão 0.1.1, imagem e áudio têm fade na entrada, no encerramento e na troca/interrupção. Máscaras e cutscenes têm volume editável de 0 a 100% na biblioteca. Durante a cutscene, o GM também pode ajustar o volume pelo controle na própria apresentação. O ajuste é salvo e sincronizado sem reiniciar o vídeo.
 
 ## O que está implementado
 

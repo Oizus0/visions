@@ -20,6 +20,11 @@ function render(){
     const details=document.createElement('div');details.className='card-info';const title=document.createElement('h3');title.textContent=item.name;
     const meta=document.createElement('p');meta.textContent=item.kind==='mask'?`Máscara · loop · ${Math.round(item.opacity*100)}%`:`${Math.floor(item.duration/60)}:${String(Math.floor(item.duration%60)).padStart(2,'0')} · com transição`;
     details.append(title,meta);
+    const volumeLabel=document.createElement('label');volumeLabel.textContent=`Volume: ${Math.round(item.volume*100)}%`;
+    const volumeSlider=document.createElement('input');volumeSlider.type='range';volumeSlider.min='0';volumeSlider.max='100';volumeSlider.value=String(Math.round(item.volume*100));volumeSlider.setAttribute('aria-label','Volume de '+item.name);
+    volumeSlider.oninput=()=>{volumeLabel.firstChild.textContent=`Volume: ${volumeSlider.value}%`;};
+    volumeSlider.onchange=()=>safe(async()=>{const volume=Number(volumeSlider.value)/100;persist(items.map(i=>i.id===item.id?{...i,volume}:i));if(state[item.kind]?.asset.id===item.id)command({type:'volume',kind:item.kind,id:item.id,volume});});
+    volumeLabel.append(volumeSlider);details.append(volumeLabel);
     if(item.kind==='mask'){
       const label=document.createElement('label');label.textContent=`Opacidade: ${Math.round(item.opacity*100)}%`;
       const slider=document.createElement('input');slider.type='range';slider.min='0';slider.max='100';slider.value=String(Math.round(item.opacity*100));slider.setAttribute('aria-label','Opacidade de '+item.name);
@@ -39,7 +44,7 @@ function render(){
   $('#live-text').textContent=[state.cut?.asset.name,state.mask?.asset.name].filter(Boolean).join(' + ');
 }
 $('#tab-cut').onclick=()=>setKind('cut');$('#tab-mask').onclick=()=>setKind('mask');
-$('#add').onclick=()=>{$('#form').reset();$('#opacity-value').value='100%';$('#form').hidden=false;$('#form-title').textContent=kind==='cut'?'Adicionar cutscene':'Adicionar máscara';$('#volume-label').hidden=kind==='mask';$('#opacity-label').hidden=kind==='cut';$('#format-note').textContent=kind==='mask'?'Use WebM com transparência real (canal alfa). Máscaras ficam em loop e reproduzem o áudio do arquivo, se houver.':'Use MP4 ou WebM com áudio. Cole o link direto para o vídeo.';$('#source').dispatchEvent(new Event('change'));$('#name').focus();};
+$('#add').onclick=()=>{$('#form').reset();$('#opacity-value').value='100%';$('#form').hidden=false;$('#form-title').textContent=kind==='cut'?'Adicionar cutscene':'Adicionar máscara';$('#volume-label').hidden=false;$('#opacity-label').hidden=kind==='cut';$('#format-note').textContent=kind==='mask'?'Use WebM com transparência real (canal alfa). Máscaras ficam em loop e reproduzem o áudio do arquivo, se houver.':'Use MP4 ou WebM com áudio. Cole o link direto para o vídeo.';$('#source').dispatchEvent(new Event('change'));$('#name').focus();};
 $('#opacity').oninput=()=>{$('#opacity-value').value=$('#opacity').value+'%';};
 $('#enable-audio').onclick=()=>{bus?.postMessage({type:'audio'});say('Solicitado o áudio da máscara neste navegador.');};
 $('#cancel').onclick=()=>{$('#form').hidden=true;};
@@ -72,7 +77,7 @@ if(OBR.isAvailable)OBR.onReady(()=>safe(async()=>{
   isGM=await OBR.player.getRole()==='GM';$('#role').textContent=isGM?'MESTRE':'JOGADOR';$('#gm').hidden=!isGM;$('#player').hidden=isGM;
   key='visions/library/'+OBR.player.id;
   if(isGM){items=readLibrary(key);const config=JSON.parse(localStorage.getItem(key+'/upload')||'{}');$('#server').value=config.server||'';$('#token').value=config.token||'';}
-  bus=await bridge();$('#enable-audio').hidden=false;bus.onmessage=({data})=>{if(data?.type==='state'){state=data.state;render();}if(data?.type==='error')say(data.message);};bus.postMessage({type:'get'});
+  bus=await bridge();$('#enable-audio').hidden=false;bus.onmessage=({data})=>{if(data?.type==='state'){state=data.state;if(isGM)items=readLibrary(key);render();}if(data?.type==='error')say(data.message);};bus.postMessage({type:'get'});
   OBR.player.onChange(p=>{isGM=p.role==='GM';$('#gm').hidden=!isGM;$('#player').hidden=isGM;$('#role').textContent=isGM?'MESTRE':'JOGADOR';});
   say(isGM?'Pronto para apresentar.':'Aguardando as visões do GM.');render();
 }));
