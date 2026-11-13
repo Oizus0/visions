@@ -1,0 +1,7 @@
+{
+  "name":"Visions", "version":"0.1.1", "manifest_version":1,
+  "description":"Cutscenes com transições e máscaras de vídeo transparentes, controladas pelo GM.",
+  "icon":"/visions/icon.svg", "background_url":"/visions/background.html",
+  "action":{"title":"Visions","icon":"/visions/icon.svg","popover":"/visions/index.html","width":440,"height":660},
+  "permissions":[{"name":"autoplay","reason":"Reproduzir as cutscenes iniciadas pelo GM, quando permitido pelo navegador."}]
+}

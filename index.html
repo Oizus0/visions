@@ -1,0 +1,26 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Visions</title></head><body><main>
+<header><div><span class="eyebrow">ATMOSFERA & NARRATIVA</span><h1>Visions<span>✦</span></h1></div><span id="role" class="badge">Conectando</span></header>
+<p class="intro">Uma cena. Todos os olhares.</p>
+<p id="status" role="status">Abra no Owlbear para apresentar à sala.</p><button id="enable-audio" hidden>Ativar áudio</button>
+<div id="gm" hidden>
+<nav aria-label="Biblioteca"><button id="tab-cut" class="tab selected" aria-pressed="true">Cutscenes</button><button id="tab-mask" class="tab" aria-pressed="false">Máscaras</button></nav>
+<div class="section-heading"><p id="hint">Vídeos com som, entrada e saída suaves.</p><button id="add" class="primary">＋ Adicionar</button></div>
+<form id="form" hidden>
+<h2 id="form-title">Nova cutscene</h2><label>Nome<input id="name" maxlength="90" required placeholder="A chegada ao outro lado"></label>
+<label>Origem<select id="source"><option value="url">Link direto de vídeo</option><option value="file">Arquivo do computador</option></select></label>
+<label id="url-label">Link HTTPS<input id="url" type="url" placeholder="https://…/cena.mp4"></label>
+<label id="file-label" hidden>Vídeo<input id="file" type="file" accept="video/mp4,video/webm,.mp4,.webm"></label>
+<p id="format-note" class="muted">MP4 ou WebM. Links de páginas do YouTube ou do GitHub não são links diretos.</p>
+<label id="volume-label">Volume<input id="volume" type="range" min="0" max="100" value="80"></label>
+<label id="opacity-label" hidden>Opacidade <output id="opacity-value">100%</output><input id="opacity" type="range" min="0" max="100" value="100"></label>
+<label>Transição<select id="fade"><option value="700">Suave · 0,7 s</option><option value="1200">Lenta · 1,2 s</option><option value="350">Rápida · 0,35 s</option></select></label>
+<div class="row"><button type="submit" id="save" class="primary">Salvar</button><button type="button" id="cancel">Cancelar</button></div>
+</form>
+<section id="library" aria-live="polite"></section>
+<div id="live" hidden><span class="live-dot"></span><span id="live-text"></span></div>
+<div class="row"><button id="stop-cut" hidden>■ Parar cutscene</button><button id="stop-mask" hidden>■ Retirar máscara</button></div>
+<details><summary>Arquivos do PC e backup</summary><p class="muted">Para enviar arquivos do PC, conecte o servidor de uploads do Visions. Com links diretos, você não precisa dele.</p>
+<label>Endereço do servidor<input id="server" type="url" placeholder="https://seu-servidor.example"></label><label>Chave de envio<input id="token" type="password" autocomplete="off"></label><button id="save-server">Salvar conexão</button>
+<p class="muted">A biblioteca fica salva neste navegador. Exporte um backup antes de trocar de computador ou limpar os dados.</p><div class="row"><button id="export">Exportar biblioteca</button><button id="import">Importar backup</button><input id="backup-file" type="file" accept="application/json" hidden></div></details>
+</div><div id="player" hidden><div class="empty"><span>✦</span><h2>O espetáculo vem até você.</h2><p>O GM controla as apresentações. Máscaras não bloqueiam seus cliques.</p></div></div>
+<footer>VISIONS <span>Feito para contar histórias.</span></footer></main><script type="module" src="/src/panel.js"></script></body></html>
