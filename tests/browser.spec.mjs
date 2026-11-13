@@ -33,6 +33,12 @@ test('GM e jogador: biblioteca, máscara sem bloqueio, cutscene e interrupção'
   await gm.getByRole('slider',{name:'Opacidade de Névoa'}).fill('25');
   await gm.getByRole('slider',{name:'Opacidade de Névoa'}).dispatchEvent('change');
   await expect(player.frameLocator('#vision-modal').locator('#masks video')).toHaveCSS('opacity','0.25');
+  await gm.getByRole('slider',{name:'Volume de Névoa'}).fill('0');
+  await gm.getByRole('slider',{name:'Volume de Névoa'}).dispatchEvent('change');
+  await expect.poll(()=>player.frameLocator('#vision-modal').locator('#masks video').evaluate(v=>v.volume)).toBe(0);
+  await gm.getByRole('slider',{name:'Volume de Névoa'}).fill('80');
+  await gm.getByRole('slider',{name:'Volume de Névoa'}).dispatchEvent('change');
+  await expect.poll(()=>player.frameLocator('#vision-modal').locator('#masks video').evaluate(v=>v.muted)).toBe(false);
   const late=await context.newPage();await late.goto('http://127.0.0.1:5193/?connection=late&role=PLAYER');
   await expect(late.locator('#vision-modal')).toHaveCSS('pointer-events','none');
   await player.evaluate(()=>{const button=document.createElement('button');button.id='map-click';button.textContent='Mapa';button.onclick=()=>button.textContent='Movido';document.body.append(button);});
@@ -55,3 +61,4 @@ test('GM e jogador: biblioteca, máscara sem bloqueio, cutscene e interrupção'
   await gm.locator('#add').click();await gm.screenshot({path:'test-results/formulario.png',fullPage:true});
   expect(await gm.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(440);
 });
+

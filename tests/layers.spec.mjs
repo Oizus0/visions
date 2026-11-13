@@ -1,0 +1,28 @@
+import {test,expect} from '@playwright/test';
+test('WebP, cor, duas camadas, parada individual e cutscene de imagem',async({context})=>{
+ const gm=await context.newPage(),player=await context.newPage();
+ await gm.goto('http://127.0.0.1:5193/?connection=gm&role=GM');
+ await player.goto('http://127.0.0.1:5193/?connection=player&role=PLAYER');
+ await expect(gm.locator('body')).toHaveAttribute('data-background','ready');
+ const webp=await gm.evaluate(()=>{const c=document.createElement('canvas');c.width=100;c.height=100;const x=c.getContext('2d');x.fillStyle='red';x.fillRect(0,0,20,20);return c.toDataURL('image/webp').split(',')[1];});
+ await context.route('https://media.example/**',r=>r.fulfill({contentType:'image/webp',body:Buffer.from(webp,'base64')}));
+ await gm.locator('#tab-mask').click();await gm.locator('#add').click();
+ await gm.locator('#name').fill('Escuridão');await gm.locator('#media').selectOption('color');await gm.locator('#color').fill('#223344');await gm.locator('#opacity').fill('40');await gm.locator('#save').click();
+ const color=gm.locator('.card').filter({hasText:'Escuridão'});await color.getByRole('button',{name:'▶ Jogar'}).click();
+ await expect(player.frameLocator('#vision-modal').locator('#masks > div')).toHaveCSS('opacity','0.4');
+ await gm.locator('#add').click();await gm.locator('#name').fill('Textura');await gm.locator('#media').selectOption('image');await gm.locator('#url').fill('https://media.example/texture.webp');await gm.locator('#save').click();
+ const texture=gm.locator('.card').filter({hasText:'Textura'});await texture.getByRole('button',{name:'▶ Jogar'}).click();
+ await expect(player.frameLocator('#vision-modal').locator('#masks > *')).toHaveCount(2);
+ await expect(player.frameLocator('#vision-modal').locator('#masks img')).toHaveCSS('opacity','1');
+ await expect(player.locator('#vision-modal')).toHaveCSS('pointer-events','none');
+ await texture.getByRole('slider',{name:'Opacidade de Textura'}).fill('25');await texture.getByRole('slider',{name:'Opacidade de Textura'}).dispatchEvent('change');
+ await expect(player.frameLocator('#vision-modal').locator('#masks img')).toHaveCSS('opacity','0.25');
+ await color.getByRole('button',{name:'Retirar',exact:true}).click();
+ await expect(player.frameLocator('#vision-modal').locator('#masks > div')).toHaveCount(0);
+ await expect(player.frameLocator('#vision-modal').locator('#masks img')).toHaveCount(1);
+ await gm.locator('#tab-cut').click();await gm.locator('#add').click();await gm.locator('#name').fill('Imagem');await gm.locator('#media').selectOption('image');await gm.locator('#url').fill('https://media.example/texture.webp');await gm.locator('#duration').fill('3');await gm.locator('#save').click();await gm.getByRole('button',{name:'▶ Jogar'}).click();
+ await expect(player.frameLocator('#vision-modal').locator('#cut-image')).toBeVisible();
+ await expect(player.locator('#vision-modal')).toHaveCSS('pointer-events','none',{timeout:12000});
+ await expect(player.frameLocator('#vision-modal').locator('#masks img')).toHaveCount(1);
+ await gm.locator('#stop-mask').click();await expect(player.locator('#vision-modal')).toHaveCount(0);
+});

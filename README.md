@@ -99,3 +99,7 @@ Build de produção e testes locais executados. A interação com o SDK foi test
 O npm informa dois avisos moderados relacionados ao `uuid` transitivo do SDK 3.1.0. O aviso conhecido afeta APIs v3/v5/v6 com buffer; o SDK usa v4 nos pontos identificados. Não foi forçada uma troca incompatível da dependência.
 
 Referências: [Modal](https://docs.owlbear.rodeo/extensions/apis/modal/), [Broadcast](https://docs.owlbear.rodeo/extensions/apis/broadcast/), [autoplay](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay).
+
+
+## Versão 0.2.0
+WebP estático ou animado pode ser usado como máscara ou apresentação (com duração escolhida). A repetição do WebP segue o próprio arquivo; não há sincronização quadro a quadro. Até duas máscaras podem coexistir, com volume/opacidade independentes e botão Retirar individual. A segunda camada fica acima da primeira. Cor sólida é uma opção de máscara sem arquivo ou hospedagem. Atualize a página de todos os participantes após publicar. O servidor opcional também aceita WebP.

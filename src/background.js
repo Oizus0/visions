@@ -7,7 +7,7 @@ OBR.onReady(async()=>{
   const run=fn=>{queue=queue.then(fn).catch(e=>{console.error(e);bus.postMessage({type:'error',message:e.message});});};
   const snapshot=()=>bus.postMessage({type:'state',state});
   async function display(){
-    const desired=state.cut?'cut':state.mask?'mask':'none';
+    const desired=state.cut?'cut':(state.mask||state.mask2)?'mask':'none';
     if(mode!==desired){
       if(mode!=='none'){
         bus.postMessage({type:'depart',duration:displayedFade});
@@ -17,7 +17,7 @@ OBR.onReady(async()=>{
       mode=desired;
       if(mode!=='none')await OBR.modal.open({id:MODAL,url:absolute('screen.html'),fullScreen:true,hideBackdrop:true,hidePaper:true,disablePointerEvents:mode==='mask'});
     }
-    displayedFade=Math.max(state.cut?.asset.fade||0,state.mask?.asset.fade||0,350);
+    displayedFade=Math.max(state.cut?.asset.fade||0,state.mask?.asset.fade||0,state.mask2?.asset.fade||0,350);
     snapshot();
   }
   async function publish(){await display();await OBR.broadcast.sendMessage(WIRE,{state},{destination:'REMOTE'});}

@@ -1,6 +1,6 @@
 {
   "name": "Visions",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "manifest_version": 1,
   "description": "Cutscenes com transições e máscaras de vídeo transparentes, controladas pelo GM.",
   "icon": "/visions/icon.svg",

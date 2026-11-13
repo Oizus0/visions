@@ -23,3 +23,8 @@ export async function upload(file,server,token){
   if(!response.ok)throw new Error(result.error||'Falha no envio do vídeo.');
   return result.url;
 }
+
+export function inspectImage(url){return new Promise((resolve,reject)=>{
+ const img=new Image();const timer=setTimeout(()=>{img.src='';reject(new Error('A imagem não respondeu.'));},20000);
+ img.onload=()=>{clearTimeout(timer);resolve();};img.onerror=()=>{clearTimeout(timer);reject(new Error('Imagem inacessível. Use um link direto WebP.'));};img.src=url;
+});}

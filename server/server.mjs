@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {pipeline} from 'node:stream/promises';
 
 export function videoExtension(bytes){
+  if(bytes.length>=12&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP')return 'webp';
   if(bytes.length>=12&&bytes.toString('ascii',4,8)==='ftyp')return 'mp4';
   if(bytes.length>=4&&bytes.subarray(0,4).equals(Buffer.from([0x1a,0x45,0xdf,0xa3])))return 'webm';
   return null;
@@ -56,7 +57,7 @@ export function createUploadServer({directory,token,publicURL,allowedOrigin,maxB
             total+=chunk.length;if(total>length||total>maxBytes)throw new Error('Tamanho excedido');
             if(!handle){
               first=Buffer.concat([first,chunk]);if(first.length<12)continue;
-              extension=videoExtension(first);if(!extension){json(res,415,{error:'Use um arquivo MP4 ou WebM válido.'});return;}
+              extension=videoExtension(first);if(!extension){json(res,415,{error:'Use um arquivo MP4, WebM ou WebP válido.'});return;}
               id=randomUUID()+'.'+extension;filepath=join(directory,id);handle=await open(filepath,'wx');
               await handle.writeFile(first);first=Buffer.alloc(0);
             }else await handle.writeFile(chunk);
@@ -72,14 +73,14 @@ export function createUploadServer({directory,token,publicURL,allowedOrigin,maxB
         }
         return;
       }
-      const match=/^\/media\/([a-f0-9-]{36}\.(mp4|webm))$/.exec(path);
+      const match=/^\/media\/([a-f0-9-]{36}\.(mp4|webm|webp))$/.exec(path);
       if(match&&['GET','HEAD'].includes(req.method)){
         const filepath=join(directory,match[1]);const info=await stat(filepath);
         const range=byteRange(req.headers.range,info.size);
         res.setHeader('Access-Control-Allow-Origin','*');
         if(!range){res.writeHead(416,{'Content-Range':`bytes */${info.size}`});res.end();return;}
         const {start,end,partial}=range;
-        res.setHeader('Content-Type',match[2]==='mp4'?'video/mp4':'video/webm');
+        res.setHeader('Content-Type',match[2]==='webp'?'image/webp':match[2]==='mp4'?'video/mp4':'video/webm');
         res.setHeader('Content-Length',end-start+1);res.setHeader('Accept-Ranges','bytes');
         res.setHeader('Cache-Control','public, max-age=31536000, immutable');
         if(partial)res.setHeader('Content-Range',`bytes ${start}-${end}/${info.size}`);
